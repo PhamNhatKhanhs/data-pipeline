@@ -1,1 +1,15 @@
- 
+snowflake_workshop:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: ud90341.ap-southeast-1.snowflakecomputing.com
+      user: your_username
+      password: your_password
+      role: dbt_role
+      database: dbt_db
+      warehouse: dbt_wh
+      schema: dbt_schema
+      threads: 10
+      client_session_keep_alive: True
+      query_tag: dbt 
