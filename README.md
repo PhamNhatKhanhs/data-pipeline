@@ -294,7 +294,7 @@ data-pipeline/
 
 ---
 
-📝 **Ghi chú**: Tài liệu này được cập nhật lần cuối: 20255
+📝 **Ghi chú**: Tài liệu này được cập nhật lần cuối: 2025
 
-🎉 **Chúc mừng!** Bạn đã hoàn thành việc cài đặt. Nếu cần hỗ trợ thêm, hãy tạo issue trên GitHub nhé! 😊
+
 
