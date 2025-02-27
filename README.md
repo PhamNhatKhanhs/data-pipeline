@@ -1,148 +1,127 @@
-# DỰ Án Data Pipeline
+# Dự Án Data Pipeline
 
-Một pipeline chuyển đổi dữ liệu hiện đại được xây dựng với dbt và Snowflake, áp dụng các thực hành tốt nhất trong mô hình dữ liệu và kỹ thuật dữ liệu.
+## 1. Tổng Quan
+Dự án này xây dựng một data pipeline module hóa sử dụng dbt và Snowflake, được thiết kế để chuyển đổi dữ liệu thô thành những thông tin có ý nghĩa thông qua quy trình ETL được cấu trúc tốt.
 
----
+## 2. Tính Năng Chính
+✅ **Thiết Kế Module**: Phân tách rõ ràng giữa các tầng **staging**, **intermediate**, và **mart**.
 
-## 1. **Tổng Quan Dự Án**
+✅ **Chất Lượng Dữ Liệu**: Kiểm tra và xác thực dữ liệu tự động.
 
-Dự án này triển khai một **pipeline xử lý dữ liệu đơn hàng** sử dụng **modern data stack**. Nó tuân theo mô hình **Medallion Architecture**, chuyển đổi dữ liệu thô qua nhiều lớp để tạo ra các mô hình dữ liệu sẵn sàng phục vụ phân tích.
+✅ **Tài Liệu**: Tự động tạo tài liệu với **lineage graphs**.
 
-### **1.1 Kiến Trúc Pipeline**
-```
-Lớp Nguồn (Raw Data)
-    │
-    ├── tpch.orders
-    │
-Lớp Staging
-    │
-    ├── stg_tpch_orders
-    │
-Lớp Trung Gian
-    │
-    ├── int_order_items
-    ├── int_order_items_summary
-    │
-Lớp Mart (Dữ liệu phục vụ báo cáo)
-    │
-    ├── fct_orders
-    ├── fct_orders_discount
-    └── fct_orders_date_valid
-```
+✅ **Chuẩn Mực**: Tuân thủ các tiêu chuẩn ngành của **dbt** và **Snowflake**.
 
----
-
-## 2. **Tính Năng Chính**
-✅ **Thiết kế module hoá**: Tách biệt rõ ràng giữa các tầng **staging**, **intermediate** và **mart**.
-
-✅ **Đảm bảo chất lượng dữ liệu**: Tích hợp kiểm tra dữ liệu tự động.
-
-✅ **Tài liệu hoá đầy đủ**: Sinh tài liệu tự động kèm theo **biểu đồ lineage**.
-
-✅ **Áp dụng best practices**: Sử dụng **dbt** và **Snowflake** theo tiêu chuẩn tốt nhất.
-
----
-
-## 3. **Công Nghệ Sử Dụng**
-- **dbt**: Chuyển đổi dữ liệu và mô hình hoá dữ liệu.
-- **Snowflake**: Kho dữ liệu đám mây.
-- **SQL**: Viết logic xử lý dữ liệu.
-- **Airflow**: Quản lý DAG để tự động hoá pipeline (nếu cần).
-- **Git**: Quản lý version control.
-
----
-
-## 4. **Bắt Đầu Sử Dụng**
-
-### **4.1 Yêu Cầu Trước Khi Cài Đặt**
+## 3. Yêu Cầu Hệ Thống
 - Python 3.x
 - dbt 1.9.x
 - Tài khoản Snowflake
+- Git
 
-### **4.2 Cài Đặt**
+## 4. Bắt Đầu
+
+### 4.1 Cài Đặt
+
+1. Clone repository:
 ```bash
-# Clone repository
 git clone https://github.com/PhamNhatKhanhs/data-pipeline.git
 cd data-pipeline
+```
 
-# Cài đặt dbt và dependencies
+2. Cài đặt dbt và các dependencies:
+```bash
 pip install dbt-snowflake
 ```
 
-### **4.3 Cấu Hình**
-- **Cấu hình Snowflake** trong file `profiles.yml`.
-- Cập nhật file `dbt_project.yml` nếu cần.
-
-### **4.4 Chạy Dự Án**
+3. Cài đặt project dependencies:
 ```bash
-# Cài đặt dependencies cho dbt
 dbt deps
+```
 
-# Chạy các mô hình
+### 4.2 Cấu Hình
+
+1. Thiết lập kết nối Snowflake:
+   - Tạo bản sao của file profiles mẫu:
+   ```bash
+   cp ~/.dbt/profiles.yml.example ~/.dbt/profiles.yml
+   ```
+   - Chỉnh sửa `~/.dbt/profiles.yml` với thông tin đăng nhập Snowflake của bạn:
+   ```yaml
+   data_pipeline:
+     target: dev
+     outputs:
+       dev:
+         type: snowflake
+         account: your_account
+         user: your_username
+         password: your_password
+         role: your_role
+         database: your_database
+         warehouse: your_warehouse
+         schema: your_schema
+         threads: 4
+   ```
+
+2. Kiểm tra kết nối:
+```bash
+dbt debug
+```
+
+### 4.3 Chạy Pipeline
+
+1. Chạy các models:
+```bash
 dbt run
+```
 
-# Kiểm tra chất lượng dữ liệu
+2. Chạy kiểm tra dữ liệu:
+```bash
 dbt test
+```
 
-# Sinh tài liệu và xem lineage graph
+3. Tạo và xem tài liệu:
+```bash
 dbt docs generate
 dbt docs serve
 ```
 
----
-
-## 5. **Cấu Trúc Thư Mục Dự Án**
+## 5. Cấu Trúc Dự Án
 ```
 data-pipeline/
 ├── models/
-│   ├── staging/        # Làm sạch dữ liệu gốc
+│   ├── staging/        # Làm sạch dữ liệu thô
 │   ├── intermediate/   # Xử lý logic nghiệp vụ
-│   ├── marts/         # Lớp dữ liệu phục vụ báo cáo
-├── tests/              # Kiểm thử dữ liệu
-├── macros/             # Chứa các hàm SQL có thể tái sử dụng
-└── dbt_project.yml     # Cấu hình dự án dbt
+│   └── marts/         # Tầng báo cáo
+├── tests/             # Kiểm tra dữ liệu
+├── macros/           # Các hàm SQL có thể tái sử dụng
+└── dbt_project.yml   # Cấu hình dự án
 ```
 
----
+## 6. Xử Lý Sự Cố
 
-## 6. **Chi Tiết Các Mô Hình Dữ Liệu**
-### **6.1 Lớp Staging** (Chuẩn hoá dữ liệu gốc)
-- `stg_tpch_orders`: Làm sạch và chuẩn hoá dữ liệu đơn hàng.
+### Các Vấn Đề Thường Gặp
 
-### **6.2 Lớp Trung Gian** (Xử lý logic nghiệp vụ)
-- `int_order_items`: Tách chi tiết từng dòng đơn hàng.
-- `int_order_items_summary`: Tổng hợp các chỉ số đơn hàng.
+1. **Vấn Đề Kết Nối**
+   - Kiểm tra thông tin đăng nhập Snowflake trong profiles.yml
+   - Kiểm tra kết nối mạng
+   - Đảm bảo quyền hạn role phù hợp
 
-### **6.3 Lớp Mart (Báo cáo & phân tích)**
-- `fct_orders`: Bảng fact chính về đơn hàng.
-- `fct_orders_discount`: Thống kê chi tiết về giảm giá.
-- `fct_orders_date_valid`: Kiểm tra tính hợp lệ của dữ liệu theo ngày.
+2. **Lỗi Model**
+   - Kiểm tra logs trong target/run_results.json
+   - Xác nhận dữ liệu nguồn có sẵn
+   - Xem xét các dependencies của model
 
----
+3. **Vấn Đề Tài Liệu**
+   - Xóa cache trình duyệt
+   - Kiểm tra cổng có sẵn (mặc định: 8080)
 
-## 7. **Cách Đóng Góp**
-Chúng tôi hoan nghênh mọi đóng góp từ cộng đồng! Hãy mở issue hoặc gửi pull request nếu bạn muốn cải thiện dự án.
+## 7. Đóng Góp
+Chúng tôi hoan nghênh mọi đóng góp! Vui lòng mở issue hoặc gửi pull request để giúp cải thiện dự án.
 
-### **Cách gửi PR**
-```bash
-# Tạo nhánh mới
-git checkout -b feature/new-feature
-
-# Commit thay đổi
-git add .
-git commit -m "Thêm tính năng XYZ"
-
-git push origin feature/new-feature
-
-# Tạo pull request trên GitHub
-```
+## 8. Giấy Phép
+Dự án này được phát hành dưới Giấy phép MIT.
 
 ---
 
-## 8. **Giấy Phép**
-Dự án này được phát hành theo giấy phép MIT.
-
----
-
-🚀 **Liên hệ**: Nếu có câu hỏi, hãy mở issue hoặc liên hệ qua GitHub! Cảm ơn bạn đã quan tâm đến dự án này! 😊
+🚀 **Liên Hệ**: Nếu có câu hỏi, vui lòng mở issue trên GitHub! Cảm ơn bạn đã quan tâm đến dự án! 😊
 
